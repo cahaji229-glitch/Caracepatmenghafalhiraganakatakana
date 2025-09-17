@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengelompokan Visual Hiragana & Katakana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --accent-blue: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-green: #10b981;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border: rgba(255, 255, 255, 0.1);
+            --glow: 0 0 20px rgba(0, 212, 255, 0.3);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: pulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.6; }
+        }
+
+        .text-gradient-blue-purple {
+            background-image: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .text-gradient-pink-purple {
+            background-image: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .text-gradient-green-blue {
+            background-image: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .border-gradient-animation {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink));
+        }
+
+        .romaji-box {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 50;
+        }
+
+        .romaji-box p {
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: var(--glow);
+        }
+
+        @media (max-width: 768px) {
+            .romaji-box {
+                bottom: 1rem;
+                padding: 1rem;
+            }
+            .romaji-box p {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="bg-pattern"></div>
+    
+    <!-- Konten Utama -->
+    <div class="container mx-auto max-w-7xl relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12 md:mb-16">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-2 leading-tight drop-shadow-xl text-gradient-blue-purple">
+                <i class="fas fa-language"></i> 🇯🇵 日本語 Visual Grouping
+            </h1>
+            <p class="text-lg md:text-xl text-slate-300 mb-2 font-light">
+                📚 Pengelompokan Hiragana & Katakana Berdasarkan Kemiripan Visual
+            </p>
+            <p class="text-sm md:text-base text-gray-300 mb-4 px-4 font-normal">
+                Form ini ditujukan untuk yang mau menghafal hiragana dan katakana secara cepat,meningkatkan retensi memori visual, dan mempercepat proses belajar
+            </p>
+            <div class="inline-flex items-center gap-2 px-6 py-2 bg-white/5 border border-white/10 rounded-full font-medium text-blue-400 backdrop-blur-sm">
+                <i class="fas fa-user-circle text-base"></i>
+                <span class="text-sm">by @fthrrzl_qa</span>
+            </div>
+        </header>
+
+        <!-- Pilihan Tipe Karakter -->
+        <div class="flex justify-center gap-4 mb-8">
+            <button id="hiragana-btn" class="px-6 py-3 rounded-full text-white font-semibold transition-all duration-300 transform scale-105 shadow-xl bg-purple-600 hover:bg-purple-700 active:scale-100">
+                <i class="fas fa-circle-dot mr-2"></i> Hiragana
+            </button>
+            <button id="katakana-btn" class="px-6 py-3 rounded-full text-white font-semibold transition-all duration-300 transform shadow-lg bg-slate-700 hover:bg-slate-600 active:scale-100">
+                <i class="fas fa-square mr-2"></i> Katakana
+            </button>
+        </div>
+
+        <!-- Bagian Hiragana -->
+        <section id="hiragana-section" class="mb-16">
+            <h2 class="flex items-center gap-4 mb-8">
+                <i class="fas fa-circle-dot text-2xl text-pink-400"></i>
+                <span class="text-2xl md:text-3xl font-semibold text-gradient-pink-purple drop-shadow-lg">
+                    🌸 Hiragana
+                </span>
+            </h2>
+            <div id="hiragana-groups" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Konten akan dimuat di sini oleh JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Bagian Katakana -->
+        <section id="katakana-section" class="hidden mb-16">
+            <h2 class="flex items-center gap-4 mb-8">
+                <i class="fas fa-square text-2xl text-green-400"></i>
+                <span class="text-2xl md:text-3xl font-semibold text-gradient-green-blue drop-shadow-lg">
+                    ⚡ Katakana
+                </span>
+            </h2>
+            <div id="katakana-groups" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Konten akan dimuat di sini oleh JavaScript -->
+            </div>
+        </section>
+
+        <!-- Pop-up Romaji -->
+        <div id="romaji-box" class="romaji-box hidden">
+            <p id="romaji-text" class="text-gradient-blue-purple"></p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-16 pt-8 border-t border-white/10 text-slate-400 text-sm">
+            © 2025 Hiragana & Katakana Visual Grouping. Dibuat dengan ❤ untuk pelajar Bahasa Jepang.
+        </footer>
+        
+        <!-- Pesan Semangat -->
+        <p class="text-center mt-4 text-lg text-yellow-300 drop-shadow-md font-semibold">SEMANGAT BELAJAR YAA</p>
+    </div>
+    
+    <script>
+        // Data untuk Hiragana dan Katakana
+        const kanaData = {
+            hiragana: [
+                {
+                    group: 1,
+                    title: '📌 a, o, so, ru, ro',
+                    characters: [
+                        { kana: 'あ', romaji: 'a' },
+                        { kana: 'お', romaji: 'o' },
+                        { kana: 'そ', romaji: 'so' },
+                        { kana: 'る', romaji: 'ru' },
+                        { kana: 'ろ', romaji: 'ro' },
+                    ]
+                },
+                {
+                    group: 2,
+                    title: '🔥 sa, ki, chi, ra',
+                    characters: [
+                        { kana: 'さ', romaji: 'sa' },
+                        { kana: 'き', romaji: 'ki' },
+                        { kana: 'ち', romaji: 'chi' },
+                        { kana: 'ら', romaji: 'ra' },
+                    ]
+                },
+                {
+                    group: 3,
+                    title: '⭐ ko, ni, ha, ho, ke, i, ta, na',
+                    characters: [
+                        { kana: 'こ', romaji: 'ko' },
+                        { kana: 'に', romaji: 'ni' },
+                        { kana: 'は', romaji: 'ha' },
+                        { kana: 'ほ', romaji: 'ho' },
+                        { kana: 'け', romaji: 'ke' },
+                        { kana: 'い', romaji: 'i' },
+                        { kana: 'た', romaji: 'ta' },
+                        { kana: 'な', romaji: 'na' },
+                    ]
+                },
+                {
+                    group: 4,
+                    title: '🌟 tsu, shi, u, ku, te, no, hi, he, ri, n',
+                    characters: [
+                        { kana: 'つ', romaji: 'tsu' },
+                        { kana: 'し', romaji: 'shi' },
+                        { kana: 'う', romaji: 'u' },
+                        { kana: 'く', romaji: 'ku' },
+                        { kana: 'て', romaji: 'te' },
+                        { kana: 'の', romaji: 'no' },
+                        { kana: 'ひ', romaji: 'hi' },
+                        { kana: 'へ', romaji: 'he' },
+                        { kana: 'り', romaji: 'ri' },
+                        { kana: 'ん', romaji: 'n' },
+                    ]
+                },
+                {
+                    group: 5,
+                    title: '💫 ma, mu, mo, yo',
+                    characters: [
+                        { kana: 'ま', romaji: 'ma' },
+                        { kana: 'む', romaji: 'mu' },
+                        { kana: 'も', romaji: 'mo' },
+                        { kana: 'よ', romaji: 'yo' },
+                    ]
+                },
+                {
+                    group: 6,
+                    title: '✨ nu, me, ne, wa, re',
+                    characters: [
+                        { kana: 'ぬ', romaji: 'nu' },
+                        { kana: 'め', romaji: 'me' },
+                        { kana: 'ね', romaji: 'ne' },
+                        { kana: 'わ', romaji: 'wa' },
+                        { kana: 'れ', romaji: 're' },
+                    ]
+                },
+                {
+                    group: 7,
+                    title: '🎯 e, ka, su, se, to, fu, mi, ya, yu, wo',
+                    characters: [
+                        { kana: 'え', romaji: 'e' },
+                        { kana: 'か', romaji: 'ka' },
+                        { kana: 'す', romaji: 'su' },
+                        { kana: 'せ', romaji: 'se' },
+                        { kana: 'と', romaji: 'to' },
+                        { kana: 'ふ', romaji: 'fu' },
+                        { kana: 'み', romaji: 'mi' },
+                        { kana: 'や', romaji: 'ya' },
+                        { kana: 'ゆ', romaji: 'yu' },
+                        { kana: 'を', romaji: 'wo' },
+                    ]
+                }
+            ],
+            katakana: [
+                {
+                    group: 1,
+                    title: '🎪 no, so, n, me, tsu, shi',
+                    characters: [
+                        { kana: 'ノ', romaji: 'no' },
+                        { kana: 'ソ', romaji: 'so' },
+                        { kana: 'ン', romaji: 'n' },
+                        { kana: 'メ', romaji: 'me' },
+                        { kana: 'ツ', romaji: 'tsu' },
+                        { kana: 'シ', romaji: 'shi' },
+                    ]
+                },
+                {
+                    group: 2,
+                    title: '🌊 fu, nu, u, ra, wa, wo',
+                    characters: [
+                        { kana: 'フ', romaji: 'fu' },
+                        { kana: 'ヌ', romaji: 'nu' },
+                        { kana: 'ウ', romaji: 'u' },
+                        { kana: 'ラ', romaji: 'ra' },
+                        { kana: 'ワ', romaji: 'wa' },
+                        { kana: 'ヲ', romaji: 'wo' },
+                    ]
+                },
+                {
+                    group: 3,
+                    title: '🚀 ma, su, ku, chi, ta, to, o, ne',
+                    characters: [
+                        { kana: 'マ', romaji: 'ma' },
+                        { kana: 'ス', romaji: 'su' },
+                        { kana: 'ク', romaji: 'ku' },
+                        { kana: 'チ', romaji: 'chi' },
+                        { kana: 'タ', romaji: 'ta' },
+                        { kana: 'ト', romaji: 'to' },
+                        { kana: 'オ', romaji: 'o' },
+                        { kana: 'ネ', romaji: 'ne' },
+                    ]
+                },
+                {
+                    group: 4,
+                    title: '⚔️ se, te, sa, ri, na',
+                    characters: [
+                        { kana: 'セ', romaji: 'se' },
+                        { kana: 'テ', romaji: 'te' },
+                        { kana: 'サ', romaji: 'sa' },
+                        { kana: 'リ', romaji: 'ri' },
+                        { kana: 'ナ', romaji: 'na' },
+                    ]
+                },
+                {
+                    group: 5,
+                    title: '🎨 ki, mi, mo, re, hi, ho',
+                    characters: [
+                        { kana: 'キ', romaji: 'ki' },
+                        { kana: 'ミ', romaji: 'mi' },
+                        { kana: 'モ', romaji: 'mo' },
+                        { kana: 'レ', romaji: 're' },
+                        { kana: 'ヒ', romaji: 'hi' },
+                        { kana: 'ホ', romaji: 'ho' },
+                    ]
+                },
+                {
+                    group: 6,
+                    title: '🎭 a, i, ka, ke, mu, ya, ru, he',
+                    characters: [
+                        { kana: 'ア', romaji: 'a' },
+                        { kana: 'イ', romaji: 'i' },
+                        { kana: 'カ', romaji: 'ka' },
+                        { kana: 'ケ', romaji: 'ke' },
+                        { kana: 'ム', romaji: 'mu' },
+                        { kana: 'ヤ', romaji: 'ya' },
+                        { kana: 'ル', romaji: 'ru' },
+                        { kana: 'ヘ', romaji: 'he' },
+                    ]
+                },
+                {
+                    group: 7,
+                    title: '🎊 yu, ko, ro, e, ni, yo',
+                    characters: [
+                        { kana: 'ユ', romaji: 'yu' },
+                        { kana: 'コ', romaji: 'ko' },
+                        { kana: 'ロ', romaji: 'ro' },
+                        { kana: 'エ', romaji: 'e' },
+                        { kana: 'ニ', romaji: 'ni' },
+                        { kana: 'ヨ', romaji: 'yo' },
+                    ]
+                }
+            ]
+        };
+
+        const hiraganaGroupsEl = document.getElementById('hiragana-groups');
+        const katakanaGroupsEl = document.getElementById('katakana-groups');
+        const hiraganaBtn = document.getElementById('hiragana-btn');
+        const katakanaBtn = document.getElementById('katakana-btn');
+        const hiraganaSection = document.getElementById('hiragana-section');
+        const katakanaSection = document.getElementById('katakana-section');
+        const romajiBox = document.getElementById('romaji-box');
+        const romajiText = document.getElementById('romaji-text');
+        
+        // Fungsi untuk merender grup
+        function renderGroups(type) {
+            const data = kanaData[type];
+            const targetEl = type === 'hiragana' ? hiraganaGroupsEl : katakanaGroupsEl;
+            targetEl.innerHTML = '';
+            
+            data.forEach(group => {
+                const groupCard = document.createElement('div');
+                groupCard.className = 'group-card bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden';
+                groupCard.innerHTML = `
+                    <div class="absolute inset-x-0 top-0 h-[2px] border-gradient-animation opacity-0 transition-opacity duration-300"></div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-blue-500 to-purple-600 shadow-md">
+                            ${group.group}
+                        </div>
+                        <h3 class="text-sm text-slate-300 font-mono font-bold">${group.title}</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        ${group.characters.map(char => `
+                            <div class="character text-lg font-semibold px-3 py-1 bg-white/5 border border-white/10 rounded-md transition-colors duration-200 cursor-pointer hover:bg-white/10 hover:border-blue-400 hover:text-blue-400" data-romaji="${char.romaji}">${char.kana}</div>
+                        `).join('')}
+                    </div>
+                `;
+                targetEl.appendChild(groupCard);
+            });
+            
+            // Tambahkan event listener untuk setiap karakter
+            document.querySelectorAll('.character').forEach(charEl => {
+                charEl.addEventListener('click', () => {
+                    const romaji = charEl.dataset.romaji;
+                    romajiText.textContent = romaji;
+                    romajiBox.classList.remove('hidden');
+                    romajiBox.classList.add('flex');
+                });
+            });
+        }
+        
+        // Fungsi untuk beralih tampilan
+        function switchView(type) {
+            if (type === 'hiragana') {
+                hiraganaSection.classList.remove('hidden');
+                katakanaSection.classList.add('hidden');
+                hiraganaBtn.classList.add('bg-purple-600', 'scale-105', 'shadow-xl');
+                hiraganaBtn.classList.remove('bg-slate-700', 'shadow-lg');
+                katakanaBtn.classList.remove('bg-purple-600', 'scale-105', 'shadow-xl');
+                katakanaBtn.classList.add('bg-slate-700', 'shadow-lg');
+            } else {
+                hiraganaSection.classList.add('hidden');
+                katakanaSection.classList.remove('hidden');
+                katakanaBtn.classList.add('bg-purple-600', 'scale-105', 'shadow-xl');
+                katakanaBtn.classList.remove('bg-slate-700', 'shadow-lg');
+                hiraganaBtn.classList.remove('bg-purple-600', 'scale-105', 'shadow-xl');
+                hiraganaBtn.classList.add('bg-slate-700', 'shadow-lg');
+            }
+        }
+        
+        // Event listeners untuk tombol
+        hiraganaBtn.addEventListener('click', () => switchView('hiragana'));
+        katakanaBtn.addEventListener('click', () => switchView('katakana'));
+        
+        // Sembunyikan pop-up saat mengklik di luar
+        document.addEventListener('click', (e) => {
+            if (!romajiBox.contains(e.target) && !e.target.closest('.character')) {
+                romajiBox.classList.add('hidden');
+                romajiBox.classList.remove('flex');
+            }
+        });
+
+        // Inisialisasi tampilan awal
+        renderGroups('hiragana');
+        renderGroups('katakana'); // Render Katakana juga agar event listener terpasang
+        switchView('hiragana');
+    </script>
+</body>
+</html>
+
